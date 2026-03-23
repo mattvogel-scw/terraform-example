@@ -51,3 +51,20 @@ resource "terraform_data" "source" {
 resource "terraform_data" "dependent" {
   input = "source id is ${terraform_data.source.id}"
 }
+
+resource "random_password" "app_secret" {
+  length  = 24
+  special = true
+}
+
+resource "tls_private_key" "app" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "terraform_data" "rendered_template" {
+  input = templatefile("${path.module}/templates/generated_credentials.tftpl", {
+    generated_password = random_password.app_secret.result
+    tls_public_key     = tls_private_key.app.public_key_pem
+  })
+}

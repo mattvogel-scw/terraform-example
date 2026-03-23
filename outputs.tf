@@ -37,3 +37,8 @@ output "source_id" {
 output "dependent_input" {
   value = terraform_data.dependent.input
 }
+
+output "rendered_credentials_template" {
+  value     = terraform_data.rendered_template.input
+  sensitive = true
+}

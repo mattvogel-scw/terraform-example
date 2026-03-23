@@ -41,7 +41,16 @@ Stop the API with `Ctrl+C` in the first terminal.
 - Backend state read/write and ETag checks (`GET`/`PUT`)
 - Lock acquisition and release (`POST`/`DELETE`)
 - Creation of multiple resource shapes (single, `for_each`, and `count`)
+- Rendering a template from generated secrets (`random_password` + `tls_private_key`)
 - Stable outputs plus a fingerprint value to quickly verify state changes
+
+## Template example
+
+This module now renders `templates/generated_credentials.tftpl` using:
+- a generated random password (`random_password.app_secret.result`)
+- a generated TLS public key (`tls_private_key.app.public_key_pem`)
+
+The rendered value is available as the sensitive output `rendered_credentials_template`.
 
 ## Useful knobs
 
