@@ -29,3 +29,11 @@ output "state_test_fingerprint" {
     ]
   }))
 }
+
+output "source_id" {
+  value = terraform_data.source.id
+}
+
+output "dependent_input" {
+  value = terraform_data.dependent.input
+}

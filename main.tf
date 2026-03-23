@@ -43,3 +43,11 @@ resource "null_resource" "replica" {
     test_token     = var.force_replacement_token
   }
 }
+
+resource "terraform_data" "source" {
+  input = "hello-from-source"
+}
+
+resource "terraform_data" "dependent" {
+  input = "source id is ${terraform_data.source.id}"
+}
