@@ -29,6 +29,7 @@ resource "null_resource" "workload" {
     name       = each.value
     env        = var.environment
     owner      = lookup(var.owners, each.value, "platform")
+    metadata   = null_resource.suite_metadata.id
     test_token = var.force_replacement_token
   }
 }
@@ -39,13 +40,15 @@ resource "null_resource" "replica" {
   triggers = {
     replica_number = tostring(count.index + 1)
     env            = var.environment
-    workload       = var.workload_names[count.index % length(var.workload_names)]
+    workload_name  = var.workload_names[count.index % length(var.workload_names)]
+    workload_id    = null_resource.workload[var.workload_names[count.index % length(var.workload_names)]].id
+    metadata_id    = null_resource.suite_metadata.id
     test_token     = var.force_replacement_token
   }
 }
 
 resource "terraform_data" "source" {
-  input = "hello-from-source"
+  input = null_resource.suite_metadata.id
 }
 
 resource "terraform_data" "dependent" {
