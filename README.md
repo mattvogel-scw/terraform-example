@@ -36,6 +36,79 @@ In a second terminal (this directory):
 
 Stop the API with `Ctrl+C` in the first terminal.
 
+## Workflow helper scripts
+
+Two helper scripts are available in `scripts/`:
+
+- `scripts/pre-workflow.sh`
+- `scripts/post-workflow.sh`
+
+Make sure they are executable:
+
+```bash
+chmod +x scripts/pre-workflow.sh scripts/post-workflow.sh
+```
+
+### Pre-workflow script
+
+Run:
+
+```bash
+./scripts/pre-workflow.sh
+```
+
+What it does:
+
+- Verifies `terraform` is installed
+- Optionally checks a local API health endpoint
+- Runs `terraform fmt -check -diff -recursive`
+- Runs `terraform init -input=false`
+- Runs `terraform validate`
+- Optionally writes a plan file
+
+Optional environment variables:
+
+- `WORK_DIR`: Terraform working directory (default: repository root)
+- `REQUIRE_LOCAL_API=1`: enable API health check
+- `API_URL=http://localhost:8080/healthz`: health check URL
+- `PLAN_OUTPUT_FILE=tfplan`: output path for `terraform plan -out`
+
+Example:
+
+```bash
+REQUIRE_LOCAL_API=1 API_URL=http://localhost:8080/healthz PLAN_OUTPUT_FILE=tfplan ./scripts/pre-workflow.sh
+```
+
+### Post-workflow script
+
+Run:
+
+```bash
+./scripts/post-workflow.sh
+```
+
+What it does:
+
+- Optionally shows Terraform outputs
+- Optionally shows Terraform state list
+- Optionally destroys infrastructure
+- Optionally removes the plan file created in pre-workflow
+
+Optional environment variables:
+
+- `WORK_DIR`: Terraform working directory (default: repository root)
+- `SHOW_OUTPUTS=1`: run `terraform output`
+- `SHOW_STATE_LIST=1`: run `terraform state list`
+- `DESTROY_ON_EXIT=1`: run `terraform destroy -auto-approve -input=false`
+- `PLAN_OUTPUT_FILE=tfplan`: plan file path to consider for cleanup
+- `CLEAN_PLAN_FILE=1`: remove `PLAN_OUTPUT_FILE` if it exists
+
+Example:
+
+```bash
+SHOW_OUTPUTS=1 SHOW_STATE_LIST=1 PLAN_OUTPUT_FILE=tfplan CLEAN_PLAN_FILE=1 ./scripts/post-workflow.sh
+```
+
 ## What this test exercises
 
 - Backend state read/write and ETag checks (`GET`/`PUT`)
